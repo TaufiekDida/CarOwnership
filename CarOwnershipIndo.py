@@ -31,7 +31,7 @@ def display_map(df,year):
     choropleth.geojson.add_to(map)
     
     for f in choropleth.geojson.data["features"]:
-        f["properties"]["ratio"] = "car ratio per 1000 pop : " + str(list(df.loc[(df['Year']==year) & (df['id']== f["id"]), "Number of cars per 1000 people"])[0])
+        f["properties"]["ratio"] = "car ratio per 1000 pop : " + "{0:.2f}".format(list(df.loc[(df['Year']==year) & (df['id']== f["id"]), "Number of cars per 1000 people"])[0])
     
     choropleth.geojson.add_child(
         folium.features.GeoJsonTooltip(["Propinsi","ratio"], 
