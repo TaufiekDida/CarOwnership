@@ -42,12 +42,14 @@ def display_map(df,year):
     return st_map
     
 
-def main():
+def main(): 
     st.set_page_config(APP_TITLE,page_icon=":bar_chart:",layout="wide")
     st.title(f":bar_chart: {APP_TITLE}") 
     st.subheader(subhead)
     
     df = get_data()
+    
+   
     # display year filters
     year = st.sidebar.selectbox("Choose year here: ", [2021,2020,2019])
     
@@ -59,7 +61,8 @@ def main():
     province = st.sidebar.multiselect("Select province to display on the table: ", 
                                       options = listprov,
                                       default="All")
-    
+
+   
     # display car number, national population, and national average
     st.header(f"National summary at year {year}")
     
@@ -69,24 +72,30 @@ def main():
     natavg = "{0:.2f}".format(num_car/pop)
     
     lcol, midcol, rcol = st.columns(3)
+    st.markdown("""<style>[data-testid="stMetricValue"] {font-size: 24px;}</style>""",
+                unsafe_allow_html=True)
     with lcol:
-        st.write(f"Countrywide number of cars in {year} is:")
-        st.write(f"{num_car} cars")
+        st.metric(f"Countrywide number of cars in {year} is:",num_car)
     
     with midcol:
-        st.write(f"Indonesian population at year {year} is:")
-        st.write(f"{pop}000 people")
+        st.metric(f"Indonesian population in {year} is:",f"{pop}000")
+        
     
     with rcol:
-        st.write(f"National car to population per 1000 people in {year} is:")
-        st.write(f"{natavg} cars per 1000 people")
+        st.metric(f"National car to population ratio in {year} is:", 
+                  f"{natavg} cars per 1000 people")
  
     
- 
+            
+    
+    st.markdown("---")
     lcol,rcol = st.columns(2)
+    
+
     
     # displaying filtered data
     df_selected = df
+    
     if province == ["All"]:
         df_selected = df.query("Year == @year").loc[:,["Province",
                                                        "Population (in thousands)",
@@ -97,19 +106,27 @@ def main():
                                                        "Population (in thousands)",
                                                        "Number of cars per 1000 people",
                                                        "Year"]]
+     
     
     with lcol:
-        st.write("Data Summary")
-        st.write("")
-        st.write(df_selected[["Province",
-                                     "Population (in thousands)",
-                                     "Number of cars per 1000 people"]])
+        st.subheader("Data Summary")
+
+        
 
     
     # display map
     with rcol:
-        st.write("Interactive map showing car ownership - population ratio density")
+        st.subheader("Interactive map showing car ownership - population ratio density")
+    
+    lcol,rcol = st.columns(2)
+    with lcol:
+        st.dataframe(df_selected[["Province",
+                                     "Population (in thousands)",
+                                     "Number of cars per 1000 people"]])
+    with rcol:
         display_map(df,year)
+        
+    st.markdown("---")
     
     # display top 5 highest
     st.subheader(f"Provinces with highest Car-Population Ratio in year {year}")
